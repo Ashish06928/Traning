@@ -28,7 +28,7 @@ namespace GenericAPI
                     connection.Open();
                     if (!String.IsNullOrEmpty(input.Description))
                     {
-                        var query = $"INSERT INTO [TaskList] (Description,CreatedOn,IsDone) VALUES('{input.Description}', '{input.CreatedOn}' , '{false}')";
+                        var query = $"INSERT INTO [Task] (Description,Status,CreatedOn) VALUES('{input.Description}', '{input.Status}' , '{input.CreatedOn}')";
                         SqlCommand command = new SqlCommand(query, connection);
                         command.ExecuteNonQuery();
                     }
@@ -52,7 +52,7 @@ namespace GenericAPI
                 using (SqlConnection connection = new SqlConnection(Environment.GetEnvironmentVariable("SqlConnectionString")))
                 {
                     connection.Open();
-                    var query = @"Select * from TaskList";
+                    var query = @"Select * from Task";
                     SqlCommand command = new SqlCommand(query, connection);
                     var reader = await command.ExecuteReaderAsync();
                     while (reader.Read())
@@ -62,7 +62,7 @@ namespace GenericAPI
                             Id = (int)reader["Id"],
                             Description = reader["Description"].ToString(),
                             CreatedOn = reader["CreatedOn"].ToString(),
-                            IsDone = (bool)reader["IsDone"]
+                            Status = reader["Status"].ToString()
                         };
                         TaskList.Add(task);
                     }
@@ -92,7 +92,7 @@ namespace GenericAPI
                 using (SqlConnection connection = new SqlConnection(Environment.GetEnvironmentVariable("SqlConnectionString")))
                 {
                     connection.Open();
-                    var query = @"Select * from TaskList Where Id = @Id";
+                    var query = @"Select * from Task Where Id = @Id";
                     SqlCommand command = new SqlCommand(query, connection);
                     command.Parameters.AddWithValue("@Id", id);
                     SqlDataAdapter da = new SqlDataAdapter(command);
@@ -119,7 +119,7 @@ namespace GenericAPI
                 using (SqlConnection connection = new SqlConnection(Environment.GetEnvironmentVariable("SqlConnectionString")))
                 {
                     connection.Open();
-                    var query = @"Delete from TaskList Where Id = @Id";
+                    var query = @"Delete from Task Where Id = @Id";
                     SqlCommand command = new SqlCommand(query, connection);
                     command.Parameters.AddWithValue("@Id", id);
                     command.ExecuteNonQuery();
@@ -144,10 +144,10 @@ namespace GenericAPI
                 using (SqlConnection connection = new SqlConnection(Environment.GetEnvironmentVariable("SqlConnectionString")))
                 {
                     connection.Open();
-                    var query = @"Update TaskList Set Description = @Description , IsDone = @IsDone Where Id = @Id";
+                    var query = @"Update Task Set Description = @Description , Status = @Status Where Id = @Id";
                     SqlCommand command = new SqlCommand(query, connection);
                     command.Parameters.AddWithValue("@Description", input.Description);
-                    command.Parameters.AddWithValue("@IsDone", input.IsDone);
+                    command.Parameters.AddWithValue("@Status", input.Status);
                     command.Parameters.AddWithValue("@Id", id);
                     command.ExecuteNonQuery();
                 }
